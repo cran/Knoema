@@ -1,0 +1,14 @@
+bc2be5e01c6fb83c06daad0b1e3232e7 *DESCRIPTION
+8ccd5207e198cd68561d2d9d83f0e87d *LICENSE
+f6c1f8ec93b6102f45a6bcf3bc9c67b5 *NAMESPACE
+b5fb89a01caa7e9a648d264c79e78df0 *R/ApiClient.R
+08d70df04369b15e70f7565e6f93f1e3 *R/ApiDefinitions.R
+ed5cd8afef79533f7ae3625801ef8ed3 *R/CommonFunctions.R
+729c3f742cc32b501f1a0155dff30a68 *R/DataReader.R
+78c2b27f7af8bb732e03551da96025c8 *R/knoema.R
+a4768c90f9c9c75eeba6963c162bb95b *README.md
+625c80c6cfad0c0d3c72231f563037d2 *man/Knoema.Rd
+d61ec0c666404b9152a9700609666df9 *tests/testthat.R
+0e9e07ae1d6e66fc5d5f2c815d67a725 *tests/testthat/test_errors.R
+83f2683b3f93b912d6fceaee765993b6 *tests/testthat/test_ts.R
+d6e0ffc93dab77b9d2d30103ce8a5379 *tests/testthat/test_xts_zoo.R
