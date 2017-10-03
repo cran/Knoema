@@ -36,7 +36,7 @@ ApiClient <- function(host="knoema.com", client.id = "", client.secret = "") {
   }
 
   client$GetAuthorization <- function(){
-    if (client$client.id != "" || client$client.secret != "") {
+    if (client$client.id != "" && client$client.secret != "") {
       key <- format(Sys.time(), "%d-%m-%y-%H", tz = "UCT")
       hash <-  hmac(key, client$client.secret, "sha1", raw = TRUE)
       secrethash <- base64encode(hash)
@@ -44,6 +44,16 @@ ApiClient <- function(host="knoema.com", client.id = "", client.secret = "") {
       return (auth)
     }
     return (NULL)
+  }
+
+  client$CheckCorrectHost <- function(){
+    if (client$host == 'knoema.com')
+      return (NULL)
+    url = client$GetUrl('api/1.0/frontend/tags')
+    out <- tryCatch(GET(url, add_headers("Content-Type"="application/json")),
+                    error = function(e)
+                     stop(simpleError(sprintf("The specified host %1s does not exist", client$host))))
+    return (out)
   }
 
   client$ApiGet <- function(apipath, query = NULL){
@@ -79,6 +89,10 @@ ApiClient <- function(host="knoema.com", client.id = "", client.secret = "") {
       stop(e)
     }
     res <- content(p, as = "parsed")
+      if (is.character(res)){
+      e <- simpleError(res)
+      stop(e)
+    }
     return(res)
   }
 

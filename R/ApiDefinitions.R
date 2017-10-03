@@ -16,12 +16,7 @@ DimensionModel <- function (data){
 }
 
 DimensionModelList <- function (data){
-  dimension.model.list=list()
-
-  for (dim in data) {
-    dim.model <- DimensionModel(dim)
-    dimension.model.list<-c(dimension.model.list, dim.model)
-  }
+  dimension.model.list <- lapply(1:length(data),function(x) DimensionModel(data[[x]]))
   class(dimension.model.list) <- "DimensionModelList"
   return(dimension.model.list)
 }
@@ -43,13 +38,12 @@ DimensionMember <- function(data){
 # The class contains dimension description and dimension items
 Dimension <- function (data){
   dimension=list(
-    items=list()
+    dim.model = DimensionModel(data),
+    items=list(),
+    fields = list()
   )
-  for (i in 1:length(data$items)){
-    item <- data$items[i][[1]]
-    member <- DimensionMember(item)
-    dimension$items <-c (dimension$items,member)
-  }
+  dimension$items <- lapply(1:length(data$items),function(x) DimensionMember(data$items[x][[1]]))
+  dimension$fields <- data$fields
 
   # The method searches member of dimension by given member key
   dimension$FindMemberByKey <- function(member.key){
@@ -80,13 +74,27 @@ Dimension <- function (data){
   return(dimension)
 }
 
+# The class contains information about timeseries attributes
+TimeSeriesAttribute <- function (data){
+  return (list(
+    name = data$name,
+    type = data$type,
+    allowedValues = data$allowedValues
+  ))
+}
+
+
 # The class contains dataset description
 Dataset <-function (data){
   dataset = list(
     id = data$id,
-    dimensions = DimensionModelList(data$dimensions)
-  )
+    dimensions = DimensionModelList(data$dimensions),
+    time.series.attributes = list()
+   )
 
+if (!is.null(data$timeseriesAttributes) && length(data$timeseriesAttributes)!=0){
+    dataset$time.series.attributes = lapply(1:length(data$timeseriesAttributes),function(x) TimeSeriesAttribute(data$timeseriesAttributes[x][[1]]))
+  }
   # The method searching dimension with a given name
   dataset$FindDimensionByName <- function (dim.name){
     for (dim in dataset$dimensions) {
