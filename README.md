@@ -21,8 +21,8 @@ Note: the CRAN version migth not reflect the latest changes made to this package
 
 # Authentication
 By default, the package allows you to work only with public datasets from the site knoema.com and has a limit on the number of requests.
-To make full use of the package we recommend you set parameters client.id and client.secret. You can get these parameters after registering on the site knoema.com, in the section "My profile - Apps - create new" (or use existing applications).
-How to set these parameters will be shown below.
+To make full use of the package we recommend you use parameters client.id and client.secret. You can get these parameters after registering on the site knoema.com, in the section "My profile - Apps - create new" (or use existing applications). For a quick call you can use the link https://knoema.com/user/apps. 
+If on this page you have some applications - open one of them or create a new one. You can see the parameters client id and client secret at the bottom of the page and then use them in the functions. How to use these parameters in the functions will be shown below.
 
 # Retrieving series from datasets
 There is one method for retrieving series from datasets in R: the Knoema method. The method works with knoema datasets.
@@ -62,13 +62,25 @@ In addition to the required using of the selections for dimensions, you can addi
 
     data = Knoema("IMFWEO2017Apr",list (country = "914;512;111", subject = "lp;ngdp", frequency = "A", timerange = "2007-2017"))
     
-The package supports such formats as "ts", "xts" and "zoo". By default type is equal "ts". How to use the type shown in the example below:
+The package supports such formats as "ts", "xts" and "zoo", "DataFrame", "DataTable", "MetaDataFrame", "MetaDataTable". By default type is equal "ts". How to use the type shown in the example below:
 
     data = Knoema("IMFWEO2017Apr",list (country = "914;512;111", subject = "lp;ngdp"), type = "zoo") 
     
 In order to get access to private datasets please use parameters client.id and client.secret in a function:
 
-    data = Knoema("MEI_BTS_COS_2015", list(location = "AT;AU", subject = "BSCI", measure = "blsa", frequency = "Q;M"), type = "xts", client.id = "some client id", client.secret = "some client secret")
+    data = Knoema("MEI_BTS_COS_2015", list(location = "AT;AU", subject = "BSCI", measure = "blsa", frequency = "Q;M"), type = "DataFrame", client.id = "some client id", client.secret = "some client secret")
+
+#Searching by mnemonics
+
+The search by mnemonics is implemented in knoema. Mnemonics is a unique identifier of the series. Different datasets can have the same series with the same mnemonics. In this case, in the search results there will be a series that was updated last. The same series can have several mnemonics at once, and you can search for any of them. 
+An example of using the search for mnemonics::
+
+    data = Knoema('dataset_id', mnemonics = 'mnemonic1;mnemonic2')
+
+If you are downloading data by mnemonics without providing dataset id, you can use this example::
+
+    data = Knoema(mnemonics = 'mnemonic1;mnemonic2')
+
 
 # Possible errors in Knoema package and how to avoid them
 1.  Error: "Client error: (403) Forbidden"
@@ -87,11 +99,18 @@ Examples:
     Knoema(NULL)
     Knoema(123)
 
-3. argument "selection" is missing, with no default
-This error appears when you set dataset.id, but did not set selection.
+3. Error: "Dimensions members or mnemonics are not specified"
+This error appears when you set dataset.id, but did not set selection or mnemonics.
 Example:
 
     Knoema('IMFWEO2017Apr')
+    
+4 Error: "The function does not support specifying mnemonics and selection in a single call"
+This error appears when you use mnemonics and selection in one query.
+Example::
+
+    Knoema('IMFWEO2017Apr', selection = list(country ='912', subject='lp'), mnemonics = 'some_mnemonic')
+    Knoema(selection = list(country = 'USA'), mnemonics = 'some_mnemonic')    
 
 4. Error: "Dimension with id or name *some_name_of_dimension* is not found"
 This error appears when you use name that doesn't correspond to any existing dimensions' names or ids.

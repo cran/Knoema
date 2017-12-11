@@ -5,15 +5,17 @@
 \title{knoema package!
 This package works with datasets from knoema.com}
 \usage{
-Knoema(dataset.id, selection, type = "ts", host = "", client.id = "",
-  client.secret = "")
+Knoema(dataset.id = NULL, selection = NULL, mnemonics = NULL,
+  type = "ts", host = "", client.id = "", client.secret = "")
 }
 \arguments{
 \item{dataset.id}{is Dataset's ID specified as a string}
 
 \item{selection}{is list where all the dimensions of the dataset are listed and a selection from them}
 
-\item{type}{is optional. By default equals "ts". Other supported variants are "xts" and "zoo"}
+\item{mnemonics}{are mnemonics values specified as a string separated by a semicolon}
+
+\item{type}{is optional. By default equals "ts". Other supported variants are "xts","zoo","DataFrame","MetaDataFrame","DataTable","MetaDataTable"}
 
 \item{host}{is optional. You can use "knoema.com" or other supported knoema's portals}
 
@@ -33,14 +35,17 @@ knoema package!
 This package works with datasets from knoema.com
 }
 \examples{
-Knoema("IMFWEO2017Apr", list(country = "512;914", subject = "NGDP_RPCH"),
+Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH"),
            client.id = "bHcV5UkOVyKcBw",
            client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
-Knoema("IMFWEO2017Apr", list(country = "512;914", subject = "NGDP_RPCH", frequency = "A"),
+Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", frequency = "A"),
            type = "xts",
            client.id = "bHcV5UkOVyKcBw",
            client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
-Knoema("IMFWEO2017Apr", list(country = "512;914", subject = "NGDP_RPCH", timerange = "2010-2015"),
+Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", timerange = "2010-2015"),
+           client.id = "bHcV5UkOVyKcBw",
+           client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
+Knoema(mnemonics="512NGDP_A_in_test_dataset",
            client.id = "bHcV5UkOVyKcBw",
            client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
 }
