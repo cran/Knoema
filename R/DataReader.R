@@ -19,6 +19,7 @@
 #' @importFrom stats ts
 #' @importFrom methods is
 #' @importFrom stats ftable
+#' @importFrom stats setNames
 
 
 DataReader <- function(client) {
@@ -44,11 +45,9 @@ DataReader <- function(client) {
       min.date <- min(dates)
       max.date <- max(dates)
       all.dates <- seq(min.date, max.date, by = freq.seq)
-      values <- sapply(1:length(all.dates), function(x) {
-          dat <- all.dates[x]
-          cond.v <- dat %in% dates
-          return(ifelse (cond.v, series[[i]][[as.character(dat)]], NA))
-      })
+      values <- series[[i]][as.character(all.dates)]
+      values[sapply(values,is.null)] <- NA
+      values <- unname(unlist(values))
 
       start.by.freq <- switch(freq,
                              "A" = c(year(min.date), 1),
@@ -127,12 +126,10 @@ DataReader <- function(client) {
 
   reader$CreateMatrixForFrameOrTable <- function(data.rows, series) {
     list.for.matrix <- sapply(1:length(series), function (i) {
-      dates <- names(series[[i]])
-      t <- sapply (1:length(data.rows), function (j) {
-        date <- data.rows[[j]]
-        cond <- date %in% dates
-        ifelse(cond, series[[i]][[date]], NA)
-      })
+      t <- lapply(data.rows, function(j) {
+       series[[i]][[j]]})
+      t[sapply(t,is.null)]<-NA
+      unlist(t)
     })
 
     matrix <- matrix(list.for.matrix, nrow = length(data.rows), ncol = length(series))
@@ -156,6 +153,13 @@ DataReader <- function(client) {
   reader$GetDataFrameByData <- function(data.rows, series) {
     matrix <- reader$CreateMatrixForFrameOrTable(data.rows, series)
     data.frame <- as.data.frame(matrix, row.names = data.rows, stringsAsFactors = FALSE)
+    colnames(data.frame) <- names(series)
+    return (data.frame)
+  }
+
+  reader$GetXtsByData <- function(data.rows, series) {
+    matrix <- reader$CreateMatrixForFrameOrTable(data.rows, series)
+    data.frame <- xts(matrix, order.by = as.Date(data.rows))
     colnames(data.frame) <- names(series)
     return (data.frame)
   }
@@ -370,7 +374,10 @@ DataReader <- function(client) {
         return (reader$CreateZoo(result))
       },
       "xts" = {
-        return (reader$CreateXts(result))
+        series = result[[1]]
+        data.rows <- sort(result[[2]])
+        data.table <- reader$GetXtsByData(data.rows, series)
+        return (data.table)
       },
       "ts" = {
         return (reader$CreateTs(result))
@@ -471,9 +478,14 @@ SelectionDataReader  <- function(client, selection) {
 
   reader$AddFullSelectionByEmptyDimValues <- function(filter.dims, request) {
     dims <- lapply(1:length(reader$dataset$dimensions), function(x) reader$dataset$dimensions[[x]]$id)
-    dims.from.filter <- lapply(1:length(filter.dims), function(x) filter.dims[[x]]$id)
-    list.condition <- sapply(dims, function(x) ! x %in% dims.from.filter)
-    out.of.filter.dim.names <- dims[list.condition]
+    if (length(filter.dims)>0) {
+      dims.from.filter <- lapply(1:length(filter.dims), function(x) filter.dims[[x]]$id)
+      list.condition <- sapply(dims, function(x) ! x %in% dims.from.filter)
+      out.of.filter.dim.names <- dims[list.condition]
+    } else {
+      out.of.filter.dim.names <- dims
+    }
+
     for (id in out.of.filter.dim.names)
     {
       l <- c(request$get("stub"), PivotItem(id, list()))
@@ -596,14 +608,11 @@ StreamingDataReader <- function(client, selection) {
         data.end <- data.end - days(as.numeric(strftime(data.end, "%u"))-1)
       }
       all.dates<- seq(data.begin, data.end, by = frequencies.seq[[frequency]])
-      for (i in 1:length(all.dates)) {
-        val <- all.values[[i]]
-        if (!is.null(val)) {
-          time <- format(as.Date(all.dates[[i]], "%Y-%m-%d"))
-          series[[name]][time] <- val
-        }
+      index.without.nan  <- which(!all.values %in% list(NULL))
+      dates <- format(all.dates[index.without.nan], "%Y-%m-%d")
+      serie <- setNames(all.values[index.without.nan], dates)
+      series[[name]] <- serie
       }
-    }
     return (series)
   }
 
@@ -712,16 +721,11 @@ StreamingDataReader <- function(client, selection) {
         data.end <- data.end - days(as.numeric(strftime(data.end,"%u"))-1)
       }
       all.dates<- seq(data.begin, data.end, by = frequencies.seq[[frequency]])
-      for (i in 1:length(all.dates)) {
-        val <- all.values[[i]]
-        if (!is.null(val)) {
-          time <- format(as.Date(all.dates[[i]], "%Y-%m-%d"))
-          if (!time %in% data.rows) {
-            data.rows <- c(data.rows, time)
-          }
-          series[[name]][time] <- val
-        }
-      }
+      index.without.nan  <- which(!all.values %in% list(NULL))
+      dates <- format(all.dates[index.without.nan ], "%Y-%m-%d")
+      data.rows <- unique(c(data.rows, dates))
+      serie <- setNames(all.values[index.without.nan], dates)
+      series[[name]] <- serie
     }
     return (list(series, data.rows, data.columns))
   }
@@ -749,16 +753,12 @@ StreamingDataReader <- function(client, selection) {
         data.end <- data.end - days(as.numeric(strftime(data.end, "%u"))-1)
       }
       all.dates<- seq(data.begin, data.end, by = frequencies.seq[[frequency]])
-      for (i in 1:length(all.dates)) {
-        val <- all.values[[i]]
-        if (!is.null(val)) {
-          time <- format(all.dates[[i]], "%Y-%m-%d")
-          if (!time %in% data.rows) {
-            data.rows <- c(data.rows, time)
-          }
-          series[[name]][time] <- val
-        }
-      }
+
+      index.without.nan  <- which(!all.values %in% list(NULL))
+      dates <- format(all.dates[index.without.nan ], "%Y-%m-%d")
+      data.rows <- unique(c(data.rows, dates))
+      serie <- setNames(all.values[index.without.nan], dates)
+      series[[name]] <- serie
     }
     return (list(series, data.rows))
   }
@@ -788,7 +788,9 @@ StreamingDataReader <- function(client, selection) {
               return(reader$CreateSeriesForTsXtsZoo(data, result))
             },
             "xts" = {
-              return(reader$CreateSeriesForTsXtsZoo(data, result))
+              series <- result[[1]]
+              data.rows <- result[[2]]
+              return(reader$CreateSeriesForDataFrame(data, series, data.rows))
             },
             "zoo" = {
               return(reader$CreateSeriesForTsXtsZoo(data, result))
@@ -823,6 +825,9 @@ StreamingDataReader <- function(client, selection) {
                         list (list(), NULL, list())
                       },
                       "DataFrame" = {
+                        list (list(), NULL, list())
+                      },
+                      "xts" = {
                         list (list(), NULL, list())
                       },
                       list()
@@ -1069,7 +1074,10 @@ MnemonicsDataReader<- function(client, mnemonics) {
               return (reader$CreateZoo(result))
             },
             "xts" = {
-              return (reader$CreateXts(result))
+              series <- result[[1]]
+              data.rows <- sort(result[[2]])
+              data.table <- reader$GetXtsByData(data.rows, series)
+              return (data.table)
             },
             "ts" = {
               return (reader$CreateTs(result))
@@ -1104,7 +1112,9 @@ MnemonicsDataReader<- function(client, mnemonics) {
               return(reader$CreateSeriesForTsXtsZoo(data, result, mnemonic))
             },
             "xts" = {
-              return(reader$CreateSeriesForTsXtsZoo(data, result, mnemonic))
+              series <- result[[1]]
+              data.rows <- result[[2]]
+              return(reader$CreateSeriesForDataFrame(data, series, data.rows, mnemonic))
             },
             "zoo" = {
               return(reader$CreateSeriesForTsXtsZoo(data, result, mnemonic))
@@ -1146,6 +1156,9 @@ MnemonicsDataReader<- function(client, mnemonics) {
     dimensions.list <- list()
     for (item in mnemonics.resp) {
       data <- item$pivot
+      if (is.null(data)) {
+        next
+      }
       mnemonic <- item$mnemonics
       if (type == "MetaDataFrame" || type == "MetaDataTable") {
         dataset.id <- data$dataset
@@ -1179,6 +1192,9 @@ MnemonicsDataReader<- function(client, mnemonics) {
                         list (list(), NULL, list())
                       },
                       "DataFrame" = {
+                        list (list(), NULL, list())
+                      },
+                      "xts" = {
                         list (list(), NULL, list())
                       },
                       list()
