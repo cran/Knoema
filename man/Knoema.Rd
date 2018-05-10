@@ -36,16 +36,16 @@ This package works with datasets from knoema.com
 }
 \examples{
 Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH"),
-           client.id = "bHcV5UkOVyKcBw",
-           client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
+           client.id = "FzOYqDg",
+           client.secret="SPrvmY8eGRcGA")
 Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", frequency = "A"),
            type = "xts",
-           client.id = "bHcV5UkOVyKcBw",
-           client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
+           client.id = "FzOYqDg",
+           client.secret="SPrvmY8eGRcGA")
 Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", timerange = "2010-2015"),
-           client.id = "bHcV5UkOVyKcBw",
-           client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
+           client.id = "FzOYqDg",
+           client.secret="SPrvmY8eGRcGA")
 Knoema(mnemonics="512NGDP_A_in_test_dataset",
-           client.id = "bHcV5UkOVyKcBw",
-           client.secret = "/0itYgLqnD0i49kmdBVSZ1qLjPU")
+           client.id = "FzOYqDg",
+           client.secret="SPrvmY8eGRcGA")
 }

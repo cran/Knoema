@@ -1,7 +1,7 @@
 Package: Knoema
 Title: Interface to the Knoema API
-Version: 0.1.13
-Date: 2018-02-06
+Version: 0.1.14
+Date: 2018-05-08
 Authors@R: c(person("Pavel Pimenov", role=c("aut", "cre"), email="pimenov@knoema.com"),
     person("Ekaterina Chirkova", role="aut", email="chirkova@knoema.com"),
     person("Knoema", role="cph"))
@@ -17,9 +17,9 @@ RoxygenNote: 6.0.1
 Suggests: testthat
 URL: https://github.com/Knoema/knoema-r-driver
 NeedsCompilation: no
-Packaged: 2018-02-07 10:38:15 UTC; dev04
+Packaged: 2018-05-08 10:19:24 UTC; dev04
 Author: Pavel Pimenov [aut, cre],
   Ekaterina Chirkova [aut],
   Knoema [cph]
 Repository: CRAN
-Date/Publication: 2018-02-07 11:42:55 UTC
+Date/Publication: 2018-05-10 06:17:20 UTC
