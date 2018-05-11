@@ -34,18 +34,3 @@ the list of timeseries in the selected format from the dataset
 knoema package!
 This package works with datasets from knoema.com
 }
-\examples{
-Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH"),
-           client.id = "FzOYqDg",
-           client.secret="SPrvmY8eGRcGA")
-Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", frequency = "A"),
-           type = "xts",
-           client.id = "FzOYqDg",
-           client.secret="SPrvmY8eGRcGA")
-Knoema("IMFWEO2017Oct", list(country = "512;914", subject = "NGDP_RPCH", timerange = "2010-2015"),
-           client.id = "FzOYqDg",
-           client.secret="SPrvmY8eGRcGA")
-Knoema(mnemonics="512NGDP_A_in_test_dataset",
-           client.id = "FzOYqDg",
-           client.secret="SPrvmY8eGRcGA")
-}
