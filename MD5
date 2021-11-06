@@ -1,4 +1,4 @@
-d3dd7fe6bcf8f812e93db64988185de8 *DESCRIPTION
+cf3b8bd61e058846addb5681e32cf26e *DESCRIPTION
 8ccd5207e198cd68561d2d9d83f0e87d *LICENSE
 f53df9a7f97d6a4607afd10e6e110785 *NAMESPACE
 e5042a202443c6d3c0c3a0b7047cbc7a *R/ApiClient.R
@@ -10,7 +10,7 @@ ab7fecf660e9699ad2f481ada8888b20 *README.md
 d5ed337d0ce1c5351fe8791ab12ab6df *man/Knoema.Rd
 d61ec0c666404b9152a9700609666df9 *tests/testthat.R
 d8d76913d42f5751d934c94ab3807d13 *tests/testthat/test_dataframe.R
-946617714965c6c2575494630e560eb2 *tests/testthat/test_errors.R
+91be36ea54c18ff0b77b9e0c8c3107bd *tests/testthat/test_errors.R
 ac902ddbfbe84a68b7cc833e71e936ea *tests/testthat/test_flat_dataset.R
 c2290cca607520a4e4493babb4cabae0 *tests/testthat/test_search_by_mnemonics.R
 966486448fef916d0daae6a88e929051 *tests/testthat/test_ts.R
